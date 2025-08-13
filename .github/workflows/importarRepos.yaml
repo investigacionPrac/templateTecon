@@ -1,0 +1,22 @@
+name: Importar repositorios
+
+on:
+    workflow_dispatch:
+        inputs:
+            URL:
+                description: 'URL del repositorio a importar'
+                required: true
+                default: ''
+
+jobs:
+    importarRepos:
+        runs-on: windows-latest
+        steps:
+            - name: Importar repositorio
+              run: |
+                git remote add oldRepo ${{github.event.inputs.URL}}
+                git fetch oldRepo
+                git merge oldRepo/main --allow-unrelated-histories
+                git add .
+                git commit -m "Importar repositorio desde ${{github.event.inputs.URL}}"
+                git push origin main
