@@ -12,6 +12,11 @@ jobs:
     importarRepos:
         runs-on: windows-latest
         steps:
+            - name: Checkout
+              uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+              with:
+                token: ${{ secrets.ghTokenWorkflow }}
+
             - name: Importar repositorio
               run: |
                 git remote add oldRepo ${{github.event.inputs.URL}}
