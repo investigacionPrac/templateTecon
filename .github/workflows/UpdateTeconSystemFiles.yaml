@@ -3,11 +3,6 @@ name: Actualizar archivos del sistema de Tecon
 on:
     workflow_dispatch:
         inputs:
-          downloadLatest:
-            description: 'Descargar la última versión de los archivos del sistema'
-            type: boolean
-            required: false
-            default: true
           url:
             description: 'URL del repositorio de Tecon'
             required: true
