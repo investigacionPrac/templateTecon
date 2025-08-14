@@ -33,6 +33,7 @@ jobs:
 
             git config --global user.name 'github-actions[bot]'
             git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+            Remove-Item -Recurse -Force teconRepo
             git add .
             git commit -m "Actualizar archivos del sistema de Tecon desde ${{ github.event.inputs.url }}"
             git push origin main
