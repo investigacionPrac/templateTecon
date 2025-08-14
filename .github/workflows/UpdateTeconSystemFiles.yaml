@@ -5,8 +5,9 @@ on:
         inputs:
           downloadLatest:
             description: 'Descargar la última versión de los archivos del sistema'
+            type: boolean
             required: false
-            default: 'true'
+            default: true
           url:
             description: 'URL del repositorio de Tecon'
             required: true
