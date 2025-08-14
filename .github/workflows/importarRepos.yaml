@@ -31,8 +31,7 @@ jobs:
             $url = "https://${{github.actor}}:${{secrets.GitLabToken}}@gitlab.com/${{github.event.inputs.URL}}"
             git remote add oldRepo $url
             git fetch oldRepo
-            git merge oldRepo/main --allow-unrelated-histories
-            git checkout --theirs
+            git merge oldRepo/main --allow-unrelated-histories -X theirs
             git add .
             git commit -m "Importar repositorio desde ${{github.event.inputs.URL}}"
             git push origin main
