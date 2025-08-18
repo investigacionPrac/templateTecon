@@ -31,10 +31,36 @@ jobs:
             $url = "https://${{github.actor}}:${{secrets.GitLabToken}}@gitlab.com/${{github.event.inputs.URL}}"
             git remote add oldRepo $url
             git fetch oldRepo
-            git merge oldRepo/main --allow-unrelated-histories -X theirs
+            git merge oldRepo/main --allow-unrelated-histories 
+            if ($LASTEXITCODE -ne 0){
+              Write-Host "Merge conflict detected, resolving automatically"
+            }
+        
+        - name: resolver conflictos en Readme
+          run: |
+            $file = "README.md"
+            git show HEAD:$file > ours.tmp
+            git show oldRepo/main:$file > theirs.tmp
+
+            Get-Content ours.tmp, theirs.tmp | Set-Content $file
+            git add $file
+
+        - name: resolver conflictos en .gitignore
+          run: |
+            $file = ".gitignore"
+            git show HEAD:$file > ours.tmp
+            git show oldRepo/main:$file > theirs.tmp
+
+            Get-Content ours.tmp, theirs.tmp | Set-Content $file
+            git add $file
+        
+        - name: Eliminar temporales y rama remote
+          run: |
+            Remove-Item ours.tmp, theirs.tmp -ErrorAction SilentlyContinue
+            git remote remove oldRepo
+
+        - name: Commit y push a main
+          run: | 
             git add .
             git commit -m "Importar repositorio desde ${{github.event.inputs.URL}}"
             git push origin main
-            # if ($LASTEXITCODE -ne 0){
-            #   Write-Host "Merge conflict detected, resolving automatically"
-            # }

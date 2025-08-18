@@ -1,0 +1,22 @@
+{
+    "cliente2":  [
+                     "app3",
+                     "app7",
+                     "app1",
+                     "app2"
+                 ],
+    "cliente3":  [
+                     "app1",
+                     "app6",
+                     "app8",
+                     "app3"
+                 ],
+    "cliente1":  [
+                     "app1",
+                     "app2",
+                     "app3",
+                     "app5",
+                     "app10",
+                     "InvPrac"
+                 ]
+}

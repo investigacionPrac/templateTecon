@@ -15,6 +15,9 @@ jobs:
       ORG: ${{github.repository_owner}}
       GITHUB_TOKEN: ${{secrets.ghTokenWorkflow}}
       REPOPATH: ${{github.repository}}
+      CLIENTID: ${{secrets.CLIENTID}}
+      CLIENTSECRET: ${{secrets.CLIENTSECRET}}
+      TENANTID: ${{secrets.TENANTID}}
 
     steps:
       - name: Checkout
@@ -24,7 +27,7 @@ jobs:
       
       - name: Iniciar sesion en azure 
         shell: powershell
-        run: az login --use-device-code
+        run: az login --service-principal --username $env:CLIENTID --password $env:CLIENTSECRET --tenant $env:TENANTID
       
       - name: Comprobar fecha y actualizar el token del workflow
         shell: powershell
@@ -52,4 +55,4 @@ jobs:
         run: |
           git add .
           git commit -m "Actualizar tokens que han caducado o van a caducar"
-          git push origin main
+          git push origin main         

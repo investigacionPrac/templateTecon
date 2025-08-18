@@ -1,0 +1,17 @@
+name: test2
+
+on:
+  workflow_dispatch:
+    inputs:
+      entorno:
+        description: Nombre del entorno a ver
+
+
+jobs:
+    prueba:
+        runs-on: windows-latest
+        steps:
+          - name: Mostrar entornos
+            run: |
+              Write-Host "Entorno: ${{ github.event.inputs.entorno }}"
+        

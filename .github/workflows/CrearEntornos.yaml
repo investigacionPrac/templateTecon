@@ -9,6 +9,7 @@ jobs:
       env:
         OWNER: ${{github.repository_owner}}
         GH_TOKEN: ${{secrets.ghTokenWorkflow}}
+        
       
       steps:
         - name: Checkout
@@ -17,7 +18,15 @@ jobs:
             token: ${{secrets.ghTokenWorkflow}}
         
         - name: Crear Entornos
-          shell: powershell
-          run: .github/scripts/environmentManagement.ps1 -repoPath $env:REPOPATH -action 'crear'
+          shell: pwsh
+          run: |
+            Write-Host "clientID: $env:CLIENTID         length: $($env:CLIENTID.Length)"
+            Write-Host "clientSecret: $env:CLIENTSECRET length: $($env:CLIENTSECRET.Length)"
+            Write-Host "tenantID: $env:TENANTID         length: $($env:TENANTID.Length)"
+            $env:GH_TOKEN| gh auth login --with-token 
+            .github/scripts/environmentManagement.ps1 -repoPath $env:REPOPATH -action 'crear'
           env:
             REPOPATH: ${{github.repository}}
+            CLIENTID: ${{secrets.clientID}}
+            CLIENTSECRET: ${{secrets.clientSecret}}
+            TENANTID: ${{secrets.tenantID}}
