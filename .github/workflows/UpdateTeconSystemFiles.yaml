@@ -51,12 +51,12 @@ jobs:
             if (-not (Test-Path "./.github/scripts")) {
               Write-Host "no existe la carpeta scripts"
               mkdir "./.github/scripts"
-              New-Item -Path "./helloWorld.txt"
+              New-Item -Path "./.github/scipts/helloWorld.txt"
             }
             if (-not (Test-Path "./.github/workflows")) { 
               Write-Host "no existe la carpeta scripts"
               mkdir "./.github/workflows"
-              New-Item -Path "./helloWorld.txt"  
+              New-Item -Path "./.github/workflows/helloWorld.txt"  
             }
             
             git clone ${{github.event.inputs.URL}} tecon-system-files
