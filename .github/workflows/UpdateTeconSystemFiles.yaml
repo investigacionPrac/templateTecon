@@ -74,9 +74,6 @@ jobs:
             Write-Host "Archivos de workflow copiados:"
             ls .github/workflows/
 
-        - name: Ver si hay cambios
-          shell: pwsh
-          run: |
             git diff --quiet
             if ($LASTEXITCODE -ne 0) {
                 Write-Host "Hay cambios en los archivos de workflow o scripts"
