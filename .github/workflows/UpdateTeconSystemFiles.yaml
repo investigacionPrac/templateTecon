@@ -1,10 +1,10 @@
-name: Update org System Files
+name: Update Tecon System Files
 
 on:
   workflow_dispatch:
     inputs:
         URL:
-            description: 'URL to update the org System files'
+            description: 'URL to update the Tecon System files'
             required: true
             default: ''
         directCommit:
@@ -13,7 +13,7 @@ on:
           default: false
 
 jobs:
-  updateORGSystemFiles:
+  updateTeconSystemFiles:
     runs-on: windows-latest
 
     steps:
@@ -31,12 +31,14 @@ jobs:
         - name: Comprobar que es un template
           shell: pwsh
           run: |
-            $url = ${{github.event.inputs.URL}}
+            $parent= Split-Path ${{github.event.inputs.URL}} -Parent
+            $org = Split-Path $parent -Leaf
+            $repo = Split-Path ${{github.event.inputs.URL}} -Leaf
             $headers = @{
                 "Authorization" = "Bearer ${{secrets.ghTokenWorkflow}}"
                 "Accept" = "application/vnd.github.v3+json"
             }
-            $response = Invoke-RestMethod -Uri "https://api.github.com/repos/$url" -Headers $headers
+            $response = Invoke-RestMethod -Uri "https://api.github.com/repos/$org/$repo" -Headers $headers
 
             if ($response.is_template -ne $true) {
                 Write-Host "El repositorio no es un template"
@@ -46,13 +48,13 @@ jobs:
         - name: Clonar repo y traer archivos workflow y scripts
           shell: pwsh
           run: |
-            git clone ${{github.event.inputs.URL}} ORG-system-files
-
-            if (!(Test-Path ".github/scripts")) { New-Item -ItemType Directory -Path ".github/scripts" | Out-Null }
-            if (!(Test-Path ".github/workflows")) { New-Item -ItemType Directory -Path ".github/workflows" | Out-Null }
+            if (!(Test-Path ".github/scripts")) { mkdir -Force ".github/scripts" | Out-Null }
+            if (!(Test-Path ".github/workflows")) { mkdir -Force ".github/workflows" | Out-Null }
             
-            Copy-Item -Path "ORG-system-files/.github/workflows/*" -Destination ".github/workflows/" -Recurse -Force -ErrorAction SilentlyContinue
-            Copy-Item -Path "ORG-system-files/scripts/*" -Destination ".github/scripts/" -Recurse -Force -ErrorAction SilentlyContinue
+            git clone ${{github.event.inputs.URL}} tecon-system-files
+            
+            Copy-Item -Path "tecon-system-files/.github/workflows/*" -Destination ".github/workflows/" -Recurse -Force -ErrorAction SilentlyContinue
+            Copy-Item -Path "tecon-system-files/scripts/*" -Destination ".github/scripts/" -Recurse -Force -ErrorAction SilentlyContinue
 
         - name: Ver si hay cambios
           shell: pwsh
@@ -60,17 +62,18 @@ jobs:
             git diff --quiet
             if ($LASTEXITCODE -ne 0) {
                 Write-Host "Hay cambios en los archivos de workflow o scripts"
+                Remove-Item -Path "tecon-system-files" -Recurse -Force -ErrorAction SilentlyContinue
                 git add .
                 if ($env:directCommit -eq 'true') {
                     Write-Host "Haciendo commit directo"
-                    git commit -m "Update org System files from ${{github.event.inputs.URL}}"
+                    git commit -m "Update Tecon System files from ${{github.event.inputs.URL}}"
                     git push
                 } else {
-                    $branch = "update-ORG-system-files" + (Get-Date -Format "yyyyMMddHHmmss")
+                    $branch = "update-tecon-system-files" + (Get-Date -Format "yyyyMMddHHmmss")
                     git checkout -b $branch
-                    git commit -m "Update org System files from ${{github.event.inputs.URL}}"
+                    git commit -m "Update Tecon System files from ${{github.event.inputs.URL}}"
                     git push origin $branch
-                    gh pr create --title "Update org System files" --body "This PR updates the org System files from ${{github.event.inputs.URL}}" --head $branch
+                    gh pr create --title "Update Tecon System files" --body "This PR updates the Tecon System files from ${{github.event.inputs.URL}}" --head $branch
                 }
             } else {
                 Write-Host "No hay cambios en los archivos de workflow o scripts"
