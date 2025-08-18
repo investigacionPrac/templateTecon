@@ -48,8 +48,11 @@ jobs:
         - name: Clonar repo y traer archivos workflow y scripts
           shell: pwsh
           run: |
-            mkdir -Force ".github/scripts"
-            if (!(Test-Path ".github/workflows")) { mkdir -Force ".github/workflows" | Out-Null }
+            if (-not (Test-Path "./.github/scripts")) {
+              Write-Host "no existe la carpeta scripts"
+              mkdir "./.github/scripts"
+            }
+            if (-not (Test-Path "./.github/workflows")) { mkdir "./.github/workflows" }
             
             git clone ${{github.event.inputs.URL}} tecon-system-files
             
