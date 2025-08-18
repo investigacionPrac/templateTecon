@@ -25,8 +25,8 @@ jobs:
             Write-Warning "Hay cambios en los archivos del sistema de Tecon"
             Remove-Item .github -Recurse -Force
             Copy-Item -Recurse -Force teconRepo/.github .github
-            git config --global user.name 'github-actions[bot]'
-            git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+            git config --global user.name "${{github.actor}}"
+            git config --global user.email "${{github.actor}}[bot]@users.noreply.github.com"
             Remove-Item -Recurse -Force teconRepo
             git add .
             git commit -m "Actualizar archivos del sistema de Tecon desde ${{ github.event.inputs.url }}"
