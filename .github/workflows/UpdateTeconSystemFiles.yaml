@@ -51,7 +51,7 @@ jobs:
             if (-not (Test-Path "./.github/scripts")) {
               Write-Host "no existe la carpeta scripts"
               mkdir "./.github/scripts"
-              New-Item -Path "./.github/scipts/helloWorld.txt"
+              New-Item -Path "./.github/scripts/helloWorld.txt"
             }
             if (-not (Test-Path "./.github/workflows")) { 
               Write-Host "no existe la carpeta scripts"
