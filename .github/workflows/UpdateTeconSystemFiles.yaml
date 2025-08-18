@@ -61,18 +61,6 @@ jobs:
             
             Copy-Item -Path "tecon-system-files/.github/workflows/*" -Destination ".github/workflows/" -Recurse -Force -ErrorAction SilentlyContinue
             Copy-Item -Path "tecon-system-files/.github/scripts/*" -Destination "./.github/scripts/" -Recurse -Force -ErrorAction SilentlyContinue
-            
-            Write-Host "Archivos copiados desde el repositorio:"
-            ls tecon-system-files/.github/scripts/
-
-            Write-Host "Archivos de workflow copiados desde el repositorio:"
-            ls tecon-system-files/.github/workflows/
-            
-            Write-Host "Archivos copiados:"
-            ls .github/scripts/
-
-            Write-Host "Archivos de workflow copiados:"
-            ls .github/workflows/
 
             git diff --quiet
             if ($LASTEXITCODE -ne 0) {
