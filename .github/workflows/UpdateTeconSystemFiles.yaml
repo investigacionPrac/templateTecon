@@ -51,18 +51,28 @@ jobs:
             if (-not (Test-Path "./.github/scripts")) {
               Write-Host "no existe la carpeta scripts"
               mkdir "./.github/scripts"
-              New-Item -Path "./.github/scripts/helloWorld.txt"
             }
             if (-not (Test-Path "./.github/workflows")) { 
               Write-Host "no existe la carpeta scripts"
               mkdir "./.github/workflows"
-              New-Item -Path "./.github/workflows/helloWorld.txt"  
             }
             
             git clone ${{github.event.inputs.URL}} tecon-system-files
             
             Copy-Item -Path "tecon-system-files/.github/workflows/*" -Destination ".github/workflows/" -Recurse -Force -ErrorAction SilentlyContinue
-            Copy-Item -Path "tecon-system-files/scripts/*" -Destination ".github/scripts/" -Recurse -Force -ErrorAction SilentlyContinue
+            Copy-Item -Path "tecon-system-files/.github/scripts/*" -Destination "./.github/scripts/" -Recurse -Force -ErrorAction SilentlyContinue
+            
+            Write-Host "Archivos copiados desde el repositorio:"
+            ls tecon-system-files/.github/scripts/
+
+            Write-Host "Archivos de workflow copiados desde el repositorio:"
+            ls tecon-system-files/.github/workflows/
+            
+            Write-Host "Archivos copiados:"
+            ls .github/scripts/
+
+            Write-Host "Archivos de workflow copiados:"
+            ls .github/workflows/
 
         - name: Ver si hay cambios
           shell: pwsh
@@ -71,8 +81,6 @@ jobs:
             if ($LASTEXITCODE -ne 0) {
                 Write-Host "Hay cambios en los archivos de workflow o scripts"
                 Remove-Item -Path "tecon-system-files" -Recurse -Force -ErrorAction SilentlyContinue
-                rm "./.github/scripts/helloWorld.txt" -ErrorAction SilentlyContinue
-                rm "./.github/workflows/helloWorld.txt" -ErrorAction SilentlyContinue
                 git add .
                 if ($env:directCommit -eq 'true') {
                     Write-Host "Haciendo commit directo"
