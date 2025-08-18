@@ -41,7 +41,7 @@ jobs:
             $response = Invoke-RestMethod -Uri "https://api.github.com/repos/$org/$repo" -Headers $headers
 
             if ($response.is_template -ne $true) {
-                Write-Host "El repositorio no es un template"
+                Write-Error "El repositorio no es un template"
                 exit 1
             }
 
