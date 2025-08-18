@@ -1,0 +1,81 @@
+name: Update org System Files
+
+on:
+  workflow_dispatch:
+    inputs:
+        URL:
+            description: 'URL to update the org System files'
+            required: true
+            default: ''
+        directCommit:
+          description: Direct Commit?
+          type: boolean
+          default: false
+
+jobs:
+  updateORGSystemFiles:
+    runs-on: windows-latest
+
+    steps:
+        - name: Checkout
+          uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+          with:
+            token: ${{secrets.ghTokenWorkflow}}
+            fetch-depth: 0
+        
+        - name: Configurar identidad de Git
+          run: |
+            git config --global user.name "${{github.actor}}"
+            git config --global user.email "${{github.actor}}[bot]@users.noreply.github.com"
+
+        - name: Comprobar que es un template
+          shell: pwsh
+          run: |
+            $url = ${{github.event.inputs.URL}}
+            $headers = @{
+                "Authorization" = "Bearer ${{secrets.ghTokenWorkflow}}"
+                "Accept" = "application/vnd.github.v3+json"
+            }
+            $response = Invoke-RestMethod -Uri "https://api.github.com/repos/$url" -Headers $headers
+
+            if ($response.is_template -ne $true) {
+                Write-Host "El repositorio no es un template"
+                exit 1
+            }
+
+        - name: Clonar repo y traer archivos workflow y scripts
+          shell: pwsh
+          run: |
+            git clone ${{github.event.inputs.URL}} ORG-system-files
+
+            if (!(Test-Path ".github/scripts")) { New-Item -ItemType Directory -Path ".github/scripts" | Out-Null }
+            if (!(Test-Path ".github/workflows")) { New-Item -ItemType Directory -Path ".github/workflows" | Out-Null }
+            
+            Copy-Item -Path "ORG-system-files/.github/workflows/*" -Destination ".github/workflows/" -Recurse -Force -ErrorAction SilentlyContinue
+            Copy-Item -Path "ORG-system-files/scripts/*" -Destination ".github/scripts/" -Recurse -Force -ErrorAction SilentlyContinue
+
+        - name: Ver si hay cambios
+          shell: pwsh
+          run: |
+            git diff --quiet
+            if ($LASTEXITCODE -ne 0) {
+                Write-Host "Hay cambios en los archivos de workflow o scripts"
+                git add .
+                if ($env:directCommit -eq 'true') {
+                    Write-Host "Haciendo commit directo"
+                    git commit -m "Update org System files from ${{github.event.inputs.URL}}"
+                    git push
+                } else {
+                    $branch = "update-ORG-system-files" + (Get-Date -Format "yyyyMMddHHmmss")
+                    git checkout -b $branch
+                    git commit -m "Update org System files from ${{github.event.inputs.URL}}"
+                    git push origin $branch
+                    gh pr create --title "Update org System files" --body "This PR updates the org System files from ${{github.event.inputs.URL}}" --head $branch
+                }
+            } else {
+                Write-Host "No hay cambios en los archivos de workflow o scripts"
+                exit 0
+            }
+          env:
+            directCommit: ${{github.event.inputs.directCommit}}
+                
