@@ -38,7 +38,7 @@ jobs:
             Get-ChildItem -Path $appName | Where-Object {$_.Name -in @('README.md', '.gitignore')} | ForEach-Object {Move-Item -Path $_.FullName -Destination ${{github.workspace}} -Force}
             
             $data = Get-Content ./.AL-Go/settings.json -Raw | ConvertFrom-Json
-            $data.apps += $appName
+            $data.appFolders += $appName
             $data | ConvertTo-Json -Depth 10 | Set-Content ./.AL-Go/settings.json
 
             rm oldRepo
