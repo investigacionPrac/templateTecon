@@ -31,8 +31,10 @@ jobs:
             git clone $url oldRepo 
             $app = Get-Content 'oldRepo/app.json' -Raw | ConvertFrom-Json
             $appName = $app.name
-            mkdir $appName
-            Copy-Item -Path oldRepo/* -Destination $appName -Force
+            if (-not(Test-Path $appName)){
+              mkdir $appName
+            }
+            Copy-Item -Path "oldRepo/*" -Destination $appName -Force -Recurse
             rm 'README.md', '.gitignore'
 
             Get-ChildItem -Path $appName | Where-Object {$_.Name -in @('README.md', '.gitignore')} | ForEach-Object {Move-Item -Path $_.FullName -Destination ${{github.workspace}} -Force}
@@ -40,6 +42,8 @@ jobs:
             $data = Get-Content ./.AL-Go/settings.json -Raw | ConvertFrom-Json
             $data.appFolders += $appName
             $data | ConvertTo-Json -Depth 10 | Set-Content ./.AL-Go/settings.json
+
+            Remove-Item -Path "oldRepo" -Recurse -Force
 
         - name: Commit y push a main
           run: | 
