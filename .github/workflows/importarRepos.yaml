@@ -47,7 +47,8 @@ jobs:
             
             Write-Host "ambos paths son iguales? $($setPath -like $settingsPath)" #<<<<<<<<<<<<< debug
             ls './.AL-Go'
-            Test-Path $setPath
+            Write-Host "Existe setPath? $(Test-Path $setPath)" #<<<<<<<<<<<<<< debug
+            Write-Host "Existe settingsPath? $(Test-Path $settingsPath)" #<<<<<<<<<<<<<< debug
             Get-ChildItem -Exclude '.git', "$appName", 'README.md', '.gitignore' | ForEach-Object {
               Move-Item -Path $_.FullName -Destination $appName -Force
             }
