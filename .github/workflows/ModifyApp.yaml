@@ -1,0 +1,51 @@
+name: Modify app
+
+on:
+  workflow_dispatch: # Para pruebas manuales
+  workflow_run:
+    workflows: ["Create a new app"]
+    types:
+      - completed
+
+jobs:
+
+  ModifyApp:
+    runs-on: windows-latest
+    name: Modify app files
+    outputs: 
+      APPNAME: ${{steps.ModifyAppJson.outputs.appName}}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          token: ${{ secrets.ghTokenWorkflow }}
+          fetch-depth: 0
+          ref: ${{github.event.workflow_run.head_branch}}
+
+      - name: Modify app.json files
+        id: ModifyAppJson
+        shell: powershell
+        run: .github/scripts/modifyFiles.ps1 -Action "appjson"
+
+      - name: Modify or add launch.json
+        shell: powershell
+        run: .github/scripts/modifyFiles.ps1 -Action "launch"
+      
+      - name: Modify or add settings.json
+        shell: powershell
+        run: .github/scripts/modifyFiles.ps1 -Action "settings"
+      
+      - name: Set up Git
+        run: |
+          git config --global user.name "${{github.actor}}[bot]"
+          git config --global user.email "${{github.actor}}[bot]@users.noreply.github.com"
+          
+      - name: Commit changes y push a rama en la que se ha creado la app
+        shell: powershell
+        run: |
+          git add .
+          git commit -m "Establecer valores prederteminados de la app $env:APPNAME (app.json, settings y launch)"
+          git push $branch
+        env:
+          APPNAME: ${{steps.ModifyAppJson.outputs.appName}}

@@ -1,0 +1,58 @@
+name: GH Token rotation
+
+on: 
+  workflow_dispatch:
+  #schedule:
+  #  - cron: '0 1 * * 1' # Se ejecuta cada lunes a la 1:00 AM UTC es decir, 3:00 AM en verano y 2:00 AM en invierno (MIN (0-59), HORA (0-23), DIA DEL MES (1-31), MES (1-12), DIA DE LA SEMANA(0-6, siendo 0 el domingo y 6 el sábado))
+
+jobs:
+   
+  rotate-secret:
+    runs-on: windows-latest   #se puede usar self-hosted, pero hay que crear un runner en tu propia maquina no se pueden ejecutar scripts por defecto y no funcionará a no ser que sea un runner en azure
+    name: Rotate Secret
+    env:
+      VAULTNAME: ${{secrets.KEYVAULTNAME}}
+      ORG: ${{github.repository_owner}}
+      GITHUB_TOKEN: ${{secrets.ghTokenWorkflow}}
+      REPOPATH: ${{github.repository}}
+      CLIENTID: ${{secrets.CLIENTID}}
+      CLIENTSECRET: ${{secrets.CLIENTSECRET}}
+      TENANTID: ${{secrets.TENANTID}}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          token: ${{ secrets.ghTokenWorkflow }}
+      
+      - name: Iniciar sesion en azure 
+        shell: powershell
+        run: az login --service-principal --username $env:CLIENTID --password $env:CLIENTSECRET --tenant $env:TENANTID
+      
+      - name: Comprobar fecha y actualizar el token del workflow
+        shell: powershell
+        run: .github/scripts/ghtokenrotation.ps1 -keyvaultname $env:VAULTNAME -action 'Workflow'
+
+      - name: Comprobar fecha y actualizar secret del delivery a StorageAccount
+        shell: powershell
+        run: .github/scripts/ghtokenrotation.ps1 -keyvaultname $env:VAULTNAME -action 'StorageAccountDelivery'
+
+      - name: Comprobar fecha y actualizar secret del delivery a github gitHubPackages
+        shell: powershell
+        run: .github/scripts/ghtokenrotation.ps1 -keyvaultname $env:VAULTNAME -action 'ghPackagesDeliver'
+
+      - name: Comprobar fecha y actualizar secrets de entorno (clientes)
+        shell: powershell
+        run: .github/scripts/ghtokenrotation.ps1 -keyvaultname $env:VAULTNAME -action 'environment'
+
+      - name: Set up Git
+        run: |
+          git config --global user.name "${{github.actor}}[bot]"
+          git config --global user.email "${{github.actor}}[bot]@users.noreply.github.com"
+
+      - name: Commit changes y push
+        shell: powershell
+        run: |
+          git add .
+          git commit -m "Actualizar tokens que han caducado o van a caducar"
+          git push origin main         

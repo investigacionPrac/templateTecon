@@ -1,0 +1,39 @@
+name: Modificar entorno a PTE el cliente en concreto
+
+on: 
+    workflow_dispatch:
+        inputs:
+            client:
+                description: 'Cliente al que se le va a modificar el entorno a PTE'
+
+jobs:
+    ActualizarPTE:
+      runs-on: windows-latest
+      env:
+        OWNER: ${{github.repository_owner}}
+        GH_TOKEN: ${{secrets.ghTokenWorkflow}}
+      
+      steps:
+        - name: Checkout
+          uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+          with:
+            token: ${{secrets.ghTokenWorkflow}}
+        
+        - name: Actualizar a PTE
+          shell: powershell
+          run: .github/scripts/environmentManagement.ps1 -repoPath $env:REPOPATH -action 'actualizarPTE' -client ${{github.event.inputs.client}}
+          env:
+            REPOPATH: ${{github.repository}}
+
+        - name: Set up Git
+          run: |
+            git config --global user.name "${{github.actor}}[bot]"
+            git config --global user.email "${{github.actor}}[bot]@users.noreply.github.com"
+
+        - name: Commit changes y push
+          shell: powershell
+          run: |
+            git add .
+            git commit -m "Actualizar Cliente seleccionado a PTE"
+            git push origin main
+            

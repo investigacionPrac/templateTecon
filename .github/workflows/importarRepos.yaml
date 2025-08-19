@@ -1,0 +1,44 @@
+name: Importar repositorios
+
+on:
+  workflow_dispatch:
+    inputs:
+      URL:
+        description: 'URL del repositorio a importar'
+        required: true
+        default: ''
+permissions:
+  contents: write
+
+jobs:
+  importarRepos:
+      runs-on: windows-latest
+      steps:
+        - name: Checkout
+          uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+          with:
+            token: ${{ github.token }}
+
+        - name: Configurar identidad de Git
+          run: |
+            git config --global user.name "${{github.actor}}[bot]"
+            git config --global user.email "${{github.actor}}[bot]@users.noreply.github.com"
+        
+        - name: Importar repositorio
+          shell: pwsh
+          continue-on-error: true
+          run: |
+            $url = "https://${{github.actor}}:${{secrets.GitLabToken}}@gitlab.com/${{github.event.inputs.URL}}"
+            git remote add oldRepo $url
+            git fetch oldRepo
+            git merge oldRepo/main --allow-unrelated-histories -X theirs
+            if ($LASTEXITCODE -ne 0){
+              Write-Host "Merge conflict detected, resolving automatically"
+            }
+            git remote remove oldRepo
+
+        - name: Commit y push a main
+          run: | 
+            git add .
+            git commit -m "Importar repositorio desde ${{github.event.inputs.URL}}"
+            git push origin main

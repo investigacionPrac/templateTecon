@@ -1,0 +1,29 @@
+name: Crear entornos por cada cliente que tenga esta app
+
+on: 
+    workflow_dispatch:
+
+jobs:
+    crearEntorno:
+      runs-on: windows-latest
+      env:
+        OWNER: ${{github.repository_owner}}
+        GH_TOKEN: ${{secrets.ghTokenWorkflow}}
+        
+      
+      steps:
+        - name: Checkout
+          uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+          with:
+            token: ${{secrets.ghTokenWorkflow}}
+        
+        - name: Crear Entornos
+          shell: pwsh
+          run: |
+            $env:GH_TOKEN| gh auth login --with-token 
+            .github/scripts/environmentManagement.ps1 -repoPath $env:REPOPATH -action 'crear'
+          env:
+            REPOPATH: ${{github.repository}}
+            CLIENTID: ${{secrets.clientID}}
+            CLIENTSECRET: ${{secrets.clientSecret}}
+            TENANTID: ${{secrets.tenantID}}
