@@ -44,12 +44,13 @@ jobs:
             $app = Get-Content './app.json' -Raw | ConvertFrom-Json
             $appName = $app.name
             mkdir $appName
+            Test-Path './.AL-Go/settings.json'
             Get-ChildItem -Exclude '.git', "$appName", 'README.md', '.gitignore' | ForEach-Object {
               Move-Item -Path $_.FullName -Destination $appName -Force
             }
-            $data = Get-Content "${{github.workspace}}/.AL-Go/settings.json" -Raw | ConvertFrom-Json
+            $data = Get-Content "./.AL-Go/settings.json" -Raw | ConvertFrom-Json
             $data.appFolders += $appName
-            $data | ConvertTo-Json -Depth 10 | Set-Content "${{github.workspace}}/.AL-Go/settings.json"
+            $data | ConvertTo-Json -Depth 10 | Set-Content "./.AL-Go/settings.json"
 
         - name: Commit y push a main
           run: | 
