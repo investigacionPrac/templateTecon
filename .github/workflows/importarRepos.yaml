@@ -35,28 +35,21 @@ jobs:
               Write-Error "Se ha producido un error al importar el repositorio"
               exit 1
             }
-            git remote remove oldRepo
-            $app = Get-Content './app.json' -Raw | ConvertFrom-Json
+            
+            $app = Get-Content 'oldRepo/app.json' -Raw | ConvertFrom-Json
             $appName = $app.name
             mkdir $appName
-            $setPath = Join-Path ${{github.workspace}} '.AL-Go/settings.json'     #<<<<<<<<<<<<<< debug
-            $setPath      #<<<<<<<<<<<<<< debug
-            $settingsPath = "./.AL-Go/settings.json"      #<<<<<<<<<<<<<< debug
-            Write-Host "settingsPath: $settingsPath" #<<<<<<<<<<<<< debug
-            Write-Host "setPath: $setPath" #<<<<<<<<<<<<< debug
             
-            Write-Host "ambos paths son iguales? $($setPath -like $settingsPath)" #<<<<<<<<<<<<< debug
-            ls './.AL-Go'
-            Write-Host "Existe setPath? $(Test-Path $setPath)" #<<<<<<<<<<<<<< debug
-            Write-Host "Existe settingsPath? $(Test-Path $settingsPath)" #<<<<<<<<<<<<<< debug
-            Get-ChildItem -Exclude '.git', "$appName", 'README.md', '.gitignore' | ForEach-Object {
-              Move-Item -Path $_.FullName -Destination $appName -Force
+            Get-ChildItem -Exclude 'README.md', '.gitignore' | ForEach-Object {
+              Move-Item -Path oldRepo/main -Destination $appName -Force
             }
 
-            $json = [System.IO.File]::ReadAllText($setPath)
-            $data = $json | ConvertFrom-Json
-            $data.appFolders += $appName
-            $data | ConvertTo-Json -Depth 10 | Set-Content $setPath
+            
+            $data = Get-Content ./.Al-Go/settings.json -Raw | ConvertFrom-Json
+            $data.apps += $appName
+            $data | ConvertTo-Json -Depth 10 | Set-Content ./.Al-Go/settings.json
+            
+            git remote remove oldRepo
 
         - name: Commit y push a main
           run: | 
