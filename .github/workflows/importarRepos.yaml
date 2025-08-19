@@ -44,6 +44,7 @@ jobs:
             $app = Get-Content './app.json' -Raw | ConvertFrom-Json
             $appName = $app.name
             mkdir $appName
+            ls
             Get-ChildItem -Exclude '.git', "$appName", 'README.md', '.gitignore' | ForEach-Object {
               Move-Item -Path $_.FullName -Destination $appName -Force
             }
