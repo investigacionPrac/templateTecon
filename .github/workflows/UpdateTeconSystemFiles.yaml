@@ -25,7 +25,7 @@ jobs:
         
         - name: Configurar identidad de Git
           run: |
-            git config --global user.name "${{github.actor}}"
+            git config --global user.name "${{github.actor}}[bot]"
             git config --global user.email "${{github.actor}}[bot]@users.noreply.github.com"
 
         - name: Comprobar que es un template
