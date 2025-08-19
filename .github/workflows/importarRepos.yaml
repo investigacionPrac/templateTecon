@@ -39,7 +39,11 @@ jobs:
             $app = Get-Content './app.json' -Raw | ConvertFrom-Json
             $appName = $app.name
             mkdir $appName
-            $setPath = Join-Path ${{github.workspace}} '.AL-Go/settings.json'
+            $setPath = Join-Path ${{github.workspace}} '.AL-Go/settings.json'     #<<<<<<<<<<<<<< debug
+            $setPath      #<<<<<<<<<<<<<< debug
+            $settingsPath = "./.AL-Go/settings.json"      #<<<<<<<<<<<<<< debug
+            
+            Write-Host "ambos paths son iguales? $($setPath -like $settingsPath)" #<<<<<<<<<<<<< debug
             ls './.AL-Go'
             Test-Path $setPath
             Get-ChildItem -Exclude '.git', "$appName", 'README.md', '.gitignore' | ForEach-Object {
