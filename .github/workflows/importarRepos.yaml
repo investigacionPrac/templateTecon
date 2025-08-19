@@ -53,8 +53,8 @@ jobs:
               Move-Item -Path $_.FullName -Destination $appName -Force
             }
 
-            Start-Sleep -Seconds 2 # Esperar a que se muevan los archivos
-            $data = Get-Content $setPath -Raw | ConvertFrom-Json
+            $json = [System.IO.File]::ReadAllText($setPath)
+            $data = $json | ConvertFrom-Json
             $data.appFolders += $appName
             $data | ConvertTo-Json -Depth 10 | Set-Content $setPath
 
