@@ -38,6 +38,22 @@ jobs:
             }
             git remote remove oldRepo
 
+        - name: Crear carpeta de la app y mover los archivos
+          shell: pwsh
+          run: |
+            $app = Get-Content './app.json' -Raw | ConvertFrom-Json
+            $appName = $app.name
+            mkdir $appName
+            Get-ChildItem -Exclude '.git', "$appName", 'README.md', '.gitignore' | ForEach-Object {
+              Move-Item -Path $_.FullName -Destination $appName -Force
+            }
+        
+        - name: Añadir carpeta de app a settings
+          run: |
+            $data = Get-Content './.AL-Go/settings.json' -Raw | ConvertFrom-Json
+            $data.appFolders += $appName
+            $data | ConvertTo-Json -Depth 10 | Set-Content './.AL-Go/settings.json'
+
         - name: Commit y push a main
           run: | 
             git add .
