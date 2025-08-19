@@ -28,28 +28,20 @@ jobs:
           shell: pwsh
           run: |
             $url = "https://${{github.actor}}:${{secrets.GitLabToken}}@gitlab.com/${{github.event.inputs.URL}}"
-            git remote add oldRepo $url
-            git fetch oldRepo
-            git merge oldRepo/main --allow-unrelated-histories -X theirs
-            if ($LASTEXITCODE -ne 0){
-              Write-Error "Se ha producido un error al importar el repositorio"
-              exit 1
-            }
-            ls oldRepo
+            git clone $url oldRepo 
             $app = Get-Content 'oldRepo/app.json' -Raw | ConvertFrom-Json
             $appName = $app.name
             mkdir $appName
-            
-            Get-ChildItem -Exclude 'README.md', '.gitignore' | ForEach-Object {
-              Move-Item -Path oldRepo/main -Destination $appName -Force
-            }
+            Copy-Item -Path oldRepo/* -Destination $appName -Force
+            rm 'README.md', '.gitignore'
 
+            Get-ChildItem -Path $appName | Where-Object {$_.Name -in @('README.md', '.gitignore')} | ForEach-Object {Move-Item -Path $_.FullName -Destination ${{github.workspace}} -Force}
             
-            $data = Get-Content ./.Al-Go/settings.json -Raw | ConvertFrom-Json
+            $data = Get-Content ./.AL-Go/settings.json -Raw | ConvertFrom-Json
             $data.apps += $appName
-            $data | ConvertTo-Json -Depth 10 | Set-Content ./.Al-Go/settings.json
+            $data | ConvertTo-Json -Depth 10 | Set-Content ./.AL-Go/settings.json
 
-            git remote remove oldRepo
+            rm oldRepo
 
         - name: Commit y push a main
           run: | 
