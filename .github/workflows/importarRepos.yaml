@@ -43,7 +43,7 @@ jobs:
               mkdir $appName
             }
 
-            Get-ChildItem ${{github.workspace}} -Exclude .git, .github, $appName, .AL-Go, .gitignore, CODEOWNERS, README.md, Security.md, Support.md, , Logo, 'al.code-workspace' | ForEach-Object {
+            Get-ChildItem ${{github.workspace}} -Exclude .git, .github, $appName, .AL-Go, .gitignore, CODEOWNERS, README.md, Security.md, Support.md, Logo, 'al.code-workspace' | ForEach-Object {
               Move-Item -Path $_.FullName -Destination $appName -Force
             }
             $data = Get-Content ./.AL-Go/settings.json -Raw | ConvertFrom-Json
