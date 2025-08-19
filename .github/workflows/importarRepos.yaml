@@ -35,7 +35,7 @@ jobs:
               Write-Error "Se ha producido un error al importar el repositorio"
               exit 1
             }
-            
+            ls oldRepo
             $app = Get-Content 'oldRepo/app.json' -Raw | ConvertFrom-Json
             $appName = $app.name
             mkdir $appName
@@ -48,7 +48,7 @@ jobs:
             $data = Get-Content ./.Al-Go/settings.json -Raw | ConvertFrom-Json
             $data.apps += $appName
             $data | ConvertTo-Json -Depth 10 | Set-Content ./.Al-Go/settings.json
-            
+
             git remote remove oldRepo
 
         - name: Commit y push a main
