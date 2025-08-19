@@ -50,9 +50,9 @@ jobs:
         
         - name: Añadir carpeta de app a settings
           run: |
-            $data = Get-Content './.AL-Go/settings.json' -Raw | ConvertFrom-Json
+            $data = Get-Content "${{github.workspace}}/.AL-Go/settings.json" -Raw | ConvertFrom-Json
             $data.appFolders += $appName
-            $data | ConvertTo-Json -Depth 10 | Set-Content './.AL-Go/settings.json'
+            $data | ConvertTo-Json -Depth 10 | Set-Content "${{github.workspace}}/.AL-Go/settings.json"
 
         - name: Commit y push a main
           run: | 
