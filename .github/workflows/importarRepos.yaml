@@ -41,8 +41,6 @@ jobs:
             $data.appFolders += $appName
             $data | ConvertTo-Json -Depth 10 | Set-Content ./.AL-Go/settings.json
 
-            rmdir oldRepo
-
         - name: Commit y push a main
           run: | 
             git add .
