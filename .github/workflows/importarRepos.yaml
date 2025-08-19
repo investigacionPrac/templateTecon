@@ -42,6 +42,8 @@ jobs:
             $setPath = Join-Path ${{github.workspace}} '.AL-Go/settings.json'     #<<<<<<<<<<<<<< debug
             $setPath      #<<<<<<<<<<<<<< debug
             $settingsPath = "./.AL-Go/settings.json"      #<<<<<<<<<<<<<< debug
+            Write-Host "settingsPath: $settingsPath" #<<<<<<<<<<<<< debug
+            Write-Host "setPath: $setPath" #<<<<<<<<<<<<< debug
             
             Write-Host "ambos paths son iguales? $($setPath -like $settingsPath)" #<<<<<<<<<<<<< debug
             ls './.AL-Go'
