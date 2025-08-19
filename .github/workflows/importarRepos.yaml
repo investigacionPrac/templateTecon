@@ -26,7 +26,6 @@ jobs:
         
         - name: Importar repositorio
           shell: pwsh
-          continue-on-error: true
           run: |
             $url = "https://${{github.actor}}:${{secrets.GitLabToken}}@gitlab.com/${{github.event.inputs.URL}}"
             git remote add oldRepo $url
@@ -37,10 +36,6 @@ jobs:
               exit 1
             }
             git remote remove oldRepo
-
-        - name: Crear carpeta de la app y mover los archivos
-          shell: pwsh
-          run: |
             $app = Get-Content './app.json' -Raw | ConvertFrom-Json
             $appName = $app.name
             mkdir $appName
