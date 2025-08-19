@@ -31,28 +31,28 @@ jobs:
             $url = "https://${{github.actor}}:${{secrets.GitLabToken}}@gitlab.com/${{github.event.inputs.URL}}"
             git remote add oldRepo $url
             git fetch oldRepo
-            git merge oldRepo/main --allow-unrelated-histories 
+            git merge oldRepo/main --allow-unrelated-histories -X theirs
             if ($LASTEXITCODE -ne 0){
               Write-Host "Merge conflict detected, resolving automatically"
             }
         
-        - name: resolver conflictos en Readme
-          run: |
-            $file = "README.md"
-            git show HEAD:$file > ours.tmp
-            git show oldRepo/main:$file > theirs.tmp
+        # - name: resolver conflictos en Readme
+        #   run: |
+        #     $file = "README.md"
+        #     git show HEAD:$file > ours.tmp
+        #     git show oldRepo/main:$file > theirs.tmp
 
-            Get-Content ours.tmp, theirs.tmp | Set-Content $file
-            git add $file
+        #     Get-Content ours.tmp, theirs.tmp | Set-Content $file
+        #     git add $file
 
-        - name: resolver conflictos en .gitignore
-          run: |
-            $file = ".gitignore"
-            git show HEAD:$file > ours.tmp
-            git show oldRepo/main:$file > theirs.tmp
+        # - name: resolver conflictos en .gitignore
+        #   run: |
+        #     $file = ".gitignore"
+        #     git show HEAD:$file > ours.tmp
+        #     git show oldRepo/main:$file > theirs.tmp
 
-            Get-Content ours.tmp, theirs.tmp | Set-Content $file
-            git add $file
+        #     Get-Content ours.tmp, theirs.tmp | Set-Content $file
+        #     git add $file
         
         - name: Eliminar temporales y rama remote
           run: |
