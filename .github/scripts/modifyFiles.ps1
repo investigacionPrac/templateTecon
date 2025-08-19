@@ -10,40 +10,40 @@ $defaultLogo = './Logo/Tecon.png'
 $fieldsToCheck = @('privacyStatement', 'EULA', 'help', 'url')
 $commonDependency = @(
     @{
-        id = "09e8e853-9a52-43c6-a954-1a4a69cd7cbc"
-        name = "Comun"
+        id        = "09e8e853-9a52-43c6-a954-1a4a69cd7cbc"
+        name      = "Comun"
         publisher = "Tecon"
-        version = "2.0.0.0"
+        version   = "2.0.0.0"
     }
 )
 
 $launch = @{
-    "version" = "0.2.0"
+    "version"        = "0.2.0"
     "configurations" = @(
         @{
-            "name" = "Sandbox"
-            "request" = "launch"
-            "type" = "al"
-            "environmentType" = "Sandbox"
-            "tenant" = ""
-            "environmentName" = ""
-            "breakOnError" = $true
-            "launchBrowser" = $true
+            "name"                           = "Sandbox"
+            "request"                        = "launch"
+            "type"                           = "al"
+            "environmentType"                = "Sandbox"
+            "tenant"                         = ""
+            "environmentName"                = ""
+            "breakOnError"                   = $true
+            "launchBrowser"                  = $true
             "enableLongRunningSqlStatements" = $true
-            "enableSqlInformationDebugger" = $true
+            "enableSqlInformationDebugger"   = $true
         },
         @{
-            "name" = "**************FORCE - Sandbox**************"
-            "request" = "launch"
-            "type" = "al"
-            "environmentType" = "Sandbox"
-            "tenant" = ""
-            "environmentName" = ""
-            "breakOnError" = $true
-            "launchBrowser" = $true
+            "name"                           = "**************FORCE - Sandbox**************"
+            "request"                        = "launch"
+            "type"                           = "al"
+            "environmentType"                = "Sandbox"
+            "tenant"                         = ""
+            "environmentName"                = ""
+            "breakOnError"                   = $true
+            "launchBrowser"                  = $true
             "enableLongRunningSqlStatements" = $true
-            "enableSqlInformationDebugger" = $true
-            "schemaUpdateMode" = "ForceSync"
+            "enableSqlInformationDebugger"   = $true
+            "schemaUpdateMode"               = "ForceSync"
         }
     )
 }
@@ -89,7 +89,6 @@ function Update-AppJson {
         [string]$FilePath
     )
     Write-Host "Repo: $RepoPath"
-    $parent= Split-Path -Path $FilePath -Parent
     Write-Host "Actualizando: $FilePath"
     $data = Get-Content -Path $FilePath -Raw | ConvertFrom-Json
 
@@ -98,19 +97,7 @@ function Update-AppJson {
             $data.$field = $defaultUrl
         }
     }
-    $logoPath = Join-Path $parent 'Logo'
-    $origen = Join-Path $RepoPath 'Logo'
-    $imagen = Join-Path $origen 'Tecon.png'
-    
-    if(-not (Test-Path $logoPath) ){
-        New-Item -Path $logoPath -ItemType Directory -Force | Out-Null 
-    }
-    
-    Copy-Item -Path $imagen -Destination $logoPath
-    if (-not $data.logo) {
-        $data.logo = $defaultLogo
-    }
-
+    $data.logo = $defaultLogo
     $data.dependencies = $commonDependency
     $data.version = "2.$((Get-Date).ToString('yyMMdd')).0.0"
 
@@ -164,7 +151,8 @@ switch ($Action.ToLower()) {
         $targetAppJson = Get-LastAppJsonPath -RepoPath $RepoPath -CommitsToCheck $CommitsToCheck
         if ($null -ne $targetAppJson) {
             Update-AppJson -FilePath $targetAppJson
-        } else {
+        }
+        else {
             Write-Warning "No se encontró app.json válido para modificar."
         }
     }
@@ -174,7 +162,8 @@ switch ($Action.ToLower()) {
         if ($null -ne $targetAppJson) {
             $appFolder = Split-Path -Path $targetAppJson -Parent
             Update-LaunchJson -RepoPath $appFolder
-        } else {
+        }
+        else {
             Write-Warning "No se encontró app.json para generar launch.json."
         }
     }
@@ -184,7 +173,8 @@ switch ($Action.ToLower()) {
         if ($null -ne $targetAppJson) {
             $appFolder = Split-Path -Path $targetAppJson -Parent
             Update-SettingsJson -RepoPath $appFolder
-        } else {
+        }
+        else {
             Write-Warning "No se encontró app.json para generar settings.json."
         }
     }
