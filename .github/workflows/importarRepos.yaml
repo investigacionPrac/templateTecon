@@ -44,14 +44,9 @@ jobs:
             $app = Get-Content './app.json' -Raw | ConvertFrom-Json
             $appName = $app.name
             mkdir $appName
-            ls './.AL-Go'
-            Test-Path './.AL-Go/settings.json'
             Get-ChildItem -Exclude '.git', "$appName", 'README.md', '.gitignore' | ForEach-Object {
               Move-Item -Path $_.FullName -Destination $appName -Force
             }
-        
-        - name: Añadir carpeta de app a settings
-          run: |
             $data = Get-Content "${{github.workspace}}/.AL-Go/settings.json" -Raw | ConvertFrom-Json
             $data.appFolders += $appName
             $data | ConvertTo-Json -Depth 10 | Set-Content "${{github.workspace}}/.AL-Go/settings.json"
