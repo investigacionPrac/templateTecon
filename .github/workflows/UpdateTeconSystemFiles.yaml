@@ -60,7 +60,7 @@ jobs:
             git clone ${{github.event.inputs.URL}} tecon-system-files
             
             Copy-Item -Path "tecon-system-files/.github/workflows/*" -Destination ".github/workflows/" -Recurse -Force -ErrorAction SilentlyContinue
-            Copy-Item -Path "tecon-system-files/.github/scripts/*" -Destination "./.github/scripts/" -Recurse -Force -ErrorAction SilentlyContinue
+            Copy-Item -Path "tecon-system-files/.github/scripts/*" -Destination ".github/scripts/" -Recurse -Force -ErrorAction SilentlyContinue
 
             git diff --quiet
             if ($LASTEXITCODE -ne 0) {
