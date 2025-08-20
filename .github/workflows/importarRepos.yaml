@@ -27,7 +27,7 @@ jobs:
         - name: Importar repositorio
           shell: pwsh
           run: |
-            $url = "https://${{secrets.GitLabToken}}@gitlab.com/${{github.event.inputs.URL}}"
+            $url = "https://${{github.actor}}:${{secrets.GitLabToken}}@gitlab.com/${{github.event.inputs.URL}}"
 
             git remote add oldRepo $url
             git fetch oldRepo
