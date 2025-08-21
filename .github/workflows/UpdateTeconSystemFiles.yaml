@@ -84,4 +84,5 @@ jobs:
             }
           env:
             directCommit: ${{github.event.inputs.directCommit}}
+            token: ${{secrets.ghTokenWorkflow}}
                 
