@@ -56,8 +56,8 @@ jobs:
               Write-Host "no existe la carpeta scripts"
               mkdir "./.github/workflows"
             }
-            
-            git clone ${{github.event.inputs.URL}} tecon-system-files
+            $url = "https://${{github.actor}}:${{secrets.ghTokenWorkflow}}@github.com/${{github.event.inputs.URL}}"
+            git clone $url tecon-system-files
             
             Copy-Item -Path "tecon-system-files/.github/workflows/*" -Destination ".github/workflows/" -Recurse -Force -ErrorAction SilentlyContinue
             Copy-Item -Path "tecon-system-files/.github/scripts/*" -Destination ".github/scripts/" -Recurse -Force -ErrorAction SilentlyContinue
@@ -84,5 +84,4 @@ jobs:
             }
           env:
             directCommit: ${{github.event.inputs.directCommit}}
-            token: ${{secrets.ghTokenWorkflow}}
                 
