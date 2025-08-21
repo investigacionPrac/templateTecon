@@ -63,23 +63,30 @@ jobs:
             Copy-Item -Path "tecon-system-files/.github/scripts/*" -Destination ".github/scripts/" -Recurse -Force -ErrorAction SilentlyContinue
 
             git diff --quiet
-            if ($LASTEXITCODE -ne 0) {
-                Write-Host "Hay cambios en los archivos de workflow o scripts"
-                Remove-Item -Path "tecon-system-files" -Recurse -Force -ErrorAction SilentlyContinue
-                git add .
-                if ($env:directCommit -eq 'true') {
-                    Write-Host "Haciendo commit directo"
-                    git commit -m "Update Tecon System files from ${{github.event.inputs.URL}}"
-                    git push
-                } else {
-                    $branch = "update-tecon-system-files" + (Get-Date -Format "yyyyMMddHHmmss")
-                    git checkout -b $branch
-                    git commit -m "Update Tecon System files from ${{github.event.inputs.URL}}"
-                    git push origin $branch
-                    gh pr create --title "Update Tecon System files" --body "This PR updates the Tecon System files from ${{github.event.inputs.URL}}" --head $branch
+            switch($LASTEXITCODE){
+                0 {
+                    Write-Host "No hay cambios en los archivos de workflow o scripts"
                 }
-            } else {
-                Write-Host "No hay cambios en los archivos de workflow o scripts"
+                1 {
+                  Write-Host "Hay cambios en los archivos de workflow o scripts"
+                  Remove-Item -Path "tecon-system-files" -Recurse -Force -ErrorAction SilentlyContinue
+                  git add .
+                  if ($env:directCommit -eq 'true') {
+                      Write-Host "Haciendo commit directo"
+                      git commit -m "Update Tecon System files from ${{github.event.inputs.URL}}"
+                      git push
+                  } else {
+                      $branch = "update-tecon-system-files" + (Get-Date -Format "yyyyMMddHHmmss")
+                      git checkout -b $branch
+                      git commit -m "Update Tecon System files from ${{github.event.inputs.URL}}"
+                      git push origin $branch
+                      gh pr create --title "Update Tecon System files" --body "This PR updates the Tecon System files from ${{github.event.inputs.URL}}" --head $branch
+                    }
+                }
+                default {
+                    Write-Error "código de error distinto a 1 o 0: $LASTEXITCODE"
+                    exit 1
+                }
             }
           env:
             directCommit: ${{github.event.inputs.directCommit}}
