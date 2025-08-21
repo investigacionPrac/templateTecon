@@ -7,12 +7,6 @@ Install-Module -Name BcContainerHelper -Force -AllowClobber
 
 Import-Module BcContainerHelper
 
-
-Write-Host "Dentro de la función"
-Write-Host "clientID: $env:CLIENTID         length: $($env:CLIENTID.Length)"
-Write-Host "clientSecret: $env:CLIENTSECRET length: $($env:CLIENTSECRET.Length)"
-Write-Host "tenantID: $env:TENANTID         length: $($env:TENANTID.Length)"
-
 $authContext = New-BcAuthContext -clientID $env:CLIENTID -clientSecret $env:CLIENTSECRET -tenantID $env:TENANTID
 
 Write-Host "AuthContext $authContext"
@@ -20,9 +14,9 @@ Write-Host "AuthContext $authContext"
 $app = Get-Content './app.json' -Raw | ConvertFrom-Json
 $appName = $app.name
 
-
+$repoName = Split-Path -Path $repoPath -Leaf
 $environmentsBC = Get-BcEnvironments -bcAuthContext $authContext
-$environmentsGH = (gh api repos/$env:OWNER/$appName/environments) | ConvertFrom-Json
+$environmentsGH = (gh api repos/$env:OWNER/$repoName/environments) | ConvertFrom-Json
 $environmentsGHNames = $environmentsGH.environments.Name
 $environmentsBCNames = @()
 $clientes = @()
@@ -45,7 +39,7 @@ if ($action -eq 'crear') {
                 Write-Warning "El entorno $client ya existe por lo que no se creará ningún entorno con ese nombre"
             }
             else {
-                gh api --method PUT -H "Accept: application/vnd.github+json" repos/$env:OWNER/$appName/environments/$client
+                gh api --method PUT -H "Accept: application/vnd.github+json" repos/$env:OWNER/$repoName/environments/$client
                 Write-Host "Entorno $client creado correctamente"
             }
         }
