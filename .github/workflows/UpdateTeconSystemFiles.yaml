@@ -58,7 +58,10 @@ jobs:
             }
             $url = "https://${{github.actor}}:${{secrets.ghTokenWorkflow}}@github.com/${{github.event.inputs.URL}}"
             git clone $url tecon-system-files
-            
+            if ($LASTEXITCODE -ne 0){
+              Write-Error "Se ha producido un error al clonar el repositorio: $LASTEXITCODE"
+              exit 1
+            }
             Copy-Item -Path "tecon-system-files/.github/workflows/*" -Destination ".github/workflows/" -Recurse -Force -ErrorAction SilentlyContinue
             Copy-Item -Path "tecon-system-files/.github/scripts/*" -Destination ".github/scripts/" -Recurse -Force -ErrorAction SilentlyContinue
 
