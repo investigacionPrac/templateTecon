@@ -80,7 +80,6 @@ jobs:
                 }
             } else {
                 Write-Host "No hay cambios en los archivos de workflow o scripts"
-                exit 0
             }
           env:
             directCommit: ${{github.event.inputs.directCommit}}
