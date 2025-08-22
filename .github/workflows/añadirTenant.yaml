@@ -26,7 +26,7 @@ jobs:
         run: |
           $tenantName = '${{github.event.inputs.tenantName}}'
           $tenantId = '${{github.event.inputs.tenantId}}'
-          $data = Get-Content ./.github/scripts/envirnomentManagement.ps1
+          $data = Get-Content ./.github/scripts/environmentManagement.ps1
           $startIndex = ($data | Select-String -Pattern '^\$tenants.*$').LineNumber
           $data[$startIndex] += "`n`t @{name = '$tenantName'; tenantID = '$tenantId'; clientID = `$clientID; clientSecret= `$clientSecret}"
       
