@@ -26,6 +26,10 @@ jobs:
         run: |
           $tenantName = '${{github.event.inputs.tenantName}}'
           $tenantId = '${{github.event.inputs.tenantId}}'
+          if (-not ($tenantID -match '^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'){
+              Write-Error "El tenantId no es un GUID válido"
+              exit 1
+          }
           $data = Get-Content ./.github/scripts/environmentManagement.ps1
           $startIndex = ($data | Select-String -Pattern '^\$tenants.*$').LineNumber
           $data[$startIndex] += "`n`t @{name = '$tenantName'; tenantID = '$tenantId'; clientID = `$clientID; clientSecret= `$clientSecret}"
