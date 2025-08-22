@@ -29,7 +29,8 @@ jobs:
           $data = Get-Content ./.github/scripts/environmentManagement.ps1
           $startIndex = ($data | Select-String -Pattern '^\$tenants.*$').LineNumber
           $data[$startIndex] += "`n`t @{name = '$tenantName'; tenantID = '$tenantId'; clientID = `$clientID; clientSecret= `$clientSecret}"
-      
+          $data | Set-Content ./.github/scripts/envirnomentManagement.ps1
+
       - name: Commit changes
         run: |
           git config --global user.name "${{github.actor}}[bot]"
